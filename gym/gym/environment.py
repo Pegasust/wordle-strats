@@ -6,55 +6,6 @@ from abc import ABC, abstractmethod
 from typing import Iterable
 from .TODOException import TODOException
 
-class Space(ABC):
-    @abstractmethod
-    def get_bounds(self):
-        """[summary]
-
-        Returns:
-            Consistent collection that iterates (and/or enumerates)
-            through bounds of each dimension in `self` space
-        Raises:
-            TODOException: If this function is not overloaded
-        """
-        raise TODOException("get_bounds")
-    @abstractmethod
-    def within_bounds(self):
-        """[summary]
-
-        Returns:
-            bool: Whether the modified space is within the bounds
-        Raises:
-            TODOException: If this function is not overloaded
-        """
-        raise TODOException("within_bounds")
-    @abstractmethod
-    def copy(self):
-        pass
-
-class UnlabelledSpace(Space):
-    def __init__(self, bounds, default_value=None):
-        self.bounds = bounds
-        self.default_value = default_value if default_value else [None for _ in range(len(bounds))]
-        self.var = self.generate_var()
-    def generate_var(self):
-        return self.default_value.copy()
-    def get_bounds(self):
-        return self.bounds 
-    def within_bounds(self):
-        return [v in b for v, b in zip(self.var, self.bounds)].count(False) == 0
-    def copy(self):
-        return UnlabelledSpace(self.bounds, self.default_value)
-
-# class LabelledSpace(Space):
-#     def __init__(self, bounds, default_value=None):
-#         """
-#         Args:
-#             bounds (Iterable(Tuple(Any, Domain))): Bounds and labels (zipped vectors or Dict.items())
-#             default_value ([type], optional): Default value for each field. Defaults to None.
-#         """
-#         self._space = {label: (default_value, bound) for label, bound in bounds}
-
 class Environment:
     pass
 class Environment(ABC):
@@ -87,20 +38,34 @@ class Environment(ABC):
     def get_info(self):
         raise TODOException("get_info")
     
-    def environments(self):
-        # (This pattern is called generator using coroutines)
-        for conf in self.environment_config_space():
-            yield self.generate_from_config(conf)
-
-    def environment_config_space(self):
-        raise AttributeError("Environment config space unknown")
-        
-    def generate_from_config(self, config):
-        raise TODOException("generate_from_config")
-
     def copy(self):
         raise ValueError("Environment cannot be copied")
     
     def unchoose(self):
         raise ValueError("Environment does not support unchoose")
+
+class EnvironmentFactory(ABC):
+    def __init__(self, ctor):
+        self._env_ctor = ctor
+
+    @abstractmethod
+    def config_bounds(self):
+        raise AttributeError("Environment config bounds unknown")
+
+    def generate_from_config(self, config):
+        return self._env_ctor(config)
+
+    def environments(self):
+        # (This pattern is called generator using coroutines)
+        for conf in self.config_bounds():
+            yield self.generate_from_config(conf)
+
+@dataclass
+class EnvironmentAbstractFactory:
+    _ctor: dict = field(default_factory=lambda:dict())
+    def register_factory(self, factory_id, factory_ctor):
+        self._ctor[factory_id] = factory_ctor
+        
+    def create_factory(self, factory_id, *args, **kwargs):
+        return self._ctor[factory_id](*args, **kwargs)
     
