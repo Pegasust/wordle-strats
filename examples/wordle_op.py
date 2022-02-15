@@ -3,6 +3,13 @@ from wordle_console_view import WordleConsoleView
 from gym import Operation
 
 class WordleOperation(Operation):
-    def __init__(self):
-        super().__init__(WordleEnv(), __, WordleConsoleView())
-        
+    def operate(self):
+        pass
+    def perform(self):
+        pass
+    def train(self):
+        pass
+
+if __name__ == "__main__":
+    from gym import run
+    run(WordleOperation)
