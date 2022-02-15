@@ -1,4 +1,4 @@
-La = ["cigar", "rebut", "sissy"
+La = ["cigar", "rebut", "sissy",
       "humph", "awake", "blush",
       "focal", "evade", "naval",
       "serve", "heath", "dwarf",

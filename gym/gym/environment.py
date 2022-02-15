@@ -3,7 +3,8 @@
     for an environment to train and backtest.
 """
 from abc import ABC, abstractmethod
-import TODOException
+from typing import Iterable
+from .TODOException import TODOException
 
 class Space(ABC):
     @abstractmethod
@@ -33,13 +34,15 @@ class Space(ABC):
 
 class UnlabelledSpace(Space):
     def __init__(self, bounds, default_value=None):
-        self.default_value = default_value
         self.bounds = bounds
-        self._space = self.generate_var()
+        self.default_value = default_value if default_value else [None for _ in range(len(bounds))]
+        self.var = self.generate_var()
+    def generate_var(self):
+        return self.default_value.copy()
     def get_bounds(self):
         return self.bounds 
     def within_bounds(self):
-        return [value in bound for value, bound in self._space].count(False) == 0
+        return [v in b for v, b in zip(self.var, self.bounds)].count(False) == 0
     def copy(self):
         return UnlabelledSpace(self.bounds, self.default_value)
 
@@ -52,6 +55,8 @@ class UnlabelledSpace(Space):
 #         """
 #         self._space = {label: (default_value, bound) for label, bound in bounds}
 
+class Environment:
+    pass
 class Environment(ABC):
     @abstractmethod
     def action_space(self):
@@ -59,12 +64,14 @@ class Environment(ABC):
             Returns a copy collection of possible actions we can take in this step()
         """
         raise TODOException("action_space")
+
     @abstractmethod
     def observable_space(self):
         """
             Returns a collection of observations made from the last step()
         """
         raise TODOException("observable_space")
+
     @abstractmethod
     def step(self, action_space):
         """
@@ -73,14 +80,27 @@ class Environment(ABC):
             Returns:
                 (obs_space, reward_space, done_environment, info)
         """
-        assert action_space.within_bounds()
-        raise ValueError("given action not in action space")
+        if not action_space.within_bounds():
+            raise ValueError("given action not in action space")
+    
+    @abstractmethod
+    def get_info(self):
+        raise TODOException("get_info")
+    
     def environments(self):
         # (This pattern is called generator using coroutines)
         for conf in self.environment_config_space():
-            yield generate_from_config(conf)
+            yield self.generate_from_config(conf)
+
     def environment_config_space(self):
         raise AttributeError("Environment config space unknown")
-    def generate_from_config(self):
+        
+    def generate_from_config(self, config):
         raise TODOException("generate_from_config")
+
+    def copy(self):
+        raise ValueError("Environment cannot be copied")
+    
+    def unchoose(self):
+        raise ValueError("Environment does not support unchoose")
     

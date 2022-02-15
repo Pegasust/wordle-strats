@@ -6,10 +6,10 @@ Couple ways to run an operation:
   2. `python -m gym <filepath> [operation_var_name global-scope Operation]`
 """
 
-from environment import Environment, Space, UnlabelledSpace
-from strategy import Strategy
-from operation import Operation
-from view import View
+from .environment import Environment, Space, UnlabelledSpace
+from .strategy import Strategy
+from .operation import Operation
+from .view import View
 
 def run(operation: Operation):
     return operation.operate()
