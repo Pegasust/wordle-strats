@@ -1,3 +1,8 @@
+"""
+Controller part of the system.
+This controller may emit control.
+"""
+
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from .environment import Space
@@ -5,13 +10,13 @@ from .TODOException import TODOException
 
 @dataclass
 class Strategy:
+    _config: None
     _knows_config: bool = True
     _name: str = "Unnamed Strategy"
 
     _last_obs: Space = field(default_factory=lambda:None)
     _last_reward: Space = field(default_factory=lambda:None)
     _env_done: bool = False
-    _config: None
 
     _action: Space = field(default_factory=lambda:None)
 

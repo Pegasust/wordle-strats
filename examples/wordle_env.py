@@ -13,7 +13,7 @@ step:
     - info: nothing right now
 
 """
-from gym import Environment, UnlabelledSpace
+from gym import Environment, UnlabelledSpace, EnvironmentFactory
 from random import choice, randint
 from dataclasses import dataclass, field
 from wordlist import La
@@ -79,12 +79,6 @@ class WordleEnv(Environment):
 
     def get_answer(self):
         return self.answer
-
-    def environment_config_space(self):
-        return range(len(self.wordlist))
-    
-    def generate_from_config(self, config):
-        return self.__init__(config)
     
     def action_space(self):
         return UnlabelledSpace(self.acceptable_words())
@@ -126,5 +120,12 @@ class WordleEnv(Environment):
         guess = action_space[0][0]
         return self.on_guess(guess)
 
+
+class WordleEnvFactory(EnvironmentFactory):
+    def __init__(self):
+        super().__init__(WordleEnv)
+    def config_bounds(self):
+        return range(len(La))
+    
 if __name__ == "__main__":
     print(generate_wordlist())

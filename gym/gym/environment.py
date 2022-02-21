@@ -5,6 +5,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 from .TODOException import TODOException
+from dataclasses import dataclass, field
 
 class Environment:
     pass

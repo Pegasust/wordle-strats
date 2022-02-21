@@ -1,25 +1,23 @@
-from abc import ABC, abstractmethod
-
-class View(ABC):
-    @abstractmethod
+class View:
+    # @abstractmethod
     def on_new_info(self, env_info):
         pass
-    @abstractmethod
+    # @abstractmethod
     def on_action(self, action_space):
         pass
-    @abstractmethod
+    # @abstractmethod
     def on_new_env(self, env, env_config):
         pass
-    @abstractmethod
+    # @abstractmethod
     def on_await_env_start(self, env_config, env_process_generator):
         pass
-    @abstractmethod
+    # @abstractmethod
     def on_env_done(self):
         pass
-    @abstractmethod
+    # @abstractmethod
     def on_spawn(self):
         pass
-    @abstractmethod
+    # @abstractmethod
     def on_destroy(self):
         pass
     
